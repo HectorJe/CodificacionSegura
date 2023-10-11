@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Datos</title>
+    <style>
+          body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        /* Estilos para el formulario */
+        form {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 25px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 0 auto;
+            display: grid;
+        }
+        button {
+            background-color: #3cff00;
+            color: rgb(0, 0, 0);
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 0 auto;
+            display: grid;
+        }
+
+        /* Estilos para la tabla */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px;
+        }
+
+        th {
+            background-color: rgb(119, 115, 115);
+            color: #fff;    
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        /* Estilos para el aviso de seguridad */
+        #securityNotice {
+            background-color: #ccfdff;
+            padding: 10px;
+            border: 1px solid #00e9dd;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Registro de Datos</h1>
+
+    <!-- Aviso de Lineamientos de Seguridad -->
+    <div id="securityNotice">
+        <p><strong>Lineamientos de Seguridad:</strong> Para proteger sus datos, por favor complete todos los campos y tenga en cuenta que utilizamos HTTPS para cifrar la comunicación, basado en la politica de la Union Europea.</p>
+    </div>
+
+    <!-- Formulario para ingresar datos -->
+    <form id="dataForm">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+
+        <label for="email">Correo Electrónico:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="edad">Ingresa tu Numero de Telefono</label>
+        <input type="text" id="telefono" name="telefono" required>
+
+        <button type="submit">Registrar</button>
+
+        <br>
+        <button type="button" id="loadDataButton">Cargar Datos desde API</button>
+    </form>
+
+    <!-- Tabla para mostrar datos registrados -->
+    <h2>Datos Registrados</h2>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Correo Electrónico</th>
+                <th>Telefono</th>
+            </tr>
+        </thead>
+        <tbody>
+           
+        </tbody>
+    </table>
+
+    <script>
+       
+        document.getElementById("dataForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            
+            // Obtener los valores ingresados en el formulario
+            var nombre = document.getElementById("nombre").value;
+            var email = document.getElementById("email").value;
+            var edad = document.getElementById("telefono").value;
+
+          
+            if (nombre && email && edad.length ==10) {
+                var table = document.getElementById("dataTable").getElementsByTagName('tbody')[0];
+                var newRow = table.insertRow(table.rows.length);
+                var cell1 = newRow.insertCell(0);
+                var cell2 = newRow.insertCell(1);
+                var cell3 = newRow.insertCell(2);
+                cell1.innerHTML = nombre;
+                cell2.innerHTML = email;
+                cell3.innerHTML = edad;
+
+               
+                document.getElementById("nombre").value = "";
+                document.getElementById("email").value = "";
+                document.getElementById("telefono").value = "";
+            } 
+            if(!(edad.length ==10)){
+                alert("El numero de telefono debe de tener al menos 10 digitos")
+            }
+        });
+
+        
+        document.getElementById("loadDataButton").addEventListener("click", function () {
+            fetch('https://jsonplaceholder.typicode.com/users')
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                   
+                    var tableBody = document.querySelector("#dataTable tbody");
+                    tableBody.innerHTML = "";
+
+                    // Mostrar los datos de la API en la tabla
+                    data.forEach(function(user) {
+                        var row = tableBody.insertRow();
+                        var nameCell = row.insertCell(0);
+                        var emailCell = row.insertCell(1);
+                        var ageCell = row.insertCell(2);
+                        nameCell.textContent = user.name;
+                        emailCell.textContent = user.email;
+                        ageCell.textContent = user.address.zipcode; 
+                    });
+                })
+                .catch(function(error) {
+                    console.error("Error al cargar datos desde la API: " + error);
+                });
+        });
+    </script>
+</body>
+</html>
